@@ -212,10 +212,18 @@ final class PathMapping
      */
     static public function isMojibake($path)
     {
+        // Genuine Korean text is not mojibake. Checked first because the UTF-8
+        // continuation bytes of Hangul (0x80-0xBF) otherwise satisfy the class below.
+        if (self::containsKorean($path)) {
+            return false;
+        }
+
         // Common mojibake patterns from Korean CP949 misread as Latin-1
         // Characters like À, Á, Â, Ã, Ä, Å, Æ, Ç, È, É, Ê, Ë, etc.
-        $mojibakePattern = '/[À-ÿ]{2,}/';
-        
+        // /u is required: this file is UTF-8, so without it PCRE reads the class
+        // byte-wise as [\x80-\xC3] instead of the intended U+00C0-U+00FF.
+        $mojibakePattern = '/[\x{00C0}-\x{00FF}]{2,}/u';
+
         return preg_match($mojibakePattern, $path) === 1;
     }
 
