@@ -10,6 +10,12 @@ RUN apt-get update -y -qq && \
   a2enmod rewrite && \
   a2enmod headers
 
+# gd and its image library dependencies
+RUN apt-get install -y -qq libpng-dev libjpeg62-turbo-dev libfreetype6-dev && \
+  docker-php-ext-configure gd --with-jpeg --with-freetype && \
+  docker-php-ext-install -j"$(nproc)" gd && \
+  rm -rf /var/lib/apt/lists/*
+
 RUN rm -f /etc/apache2/sites-available/000-default.conf
 
 RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
