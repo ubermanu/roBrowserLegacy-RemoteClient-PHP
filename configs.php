@@ -1,5 +1,31 @@
 <?php
 
+    if (!function_exists('robrowser_env_bool')) {
+        /**
+         * Read a boolean environment variable.
+         *
+         * `getenv('X') ? getenv('X') : $default` cannot express "off": the value
+         * is always a non-empty string, so 'false' / 'off' / 'no' all read as true,
+         * while '0' and '' fall back to $default instead of meaning false.
+         *
+         * @param string $name
+         * @param bool $default Used when the variable is unset, empty or unparsable.
+         * @return bool
+         */
+        function robrowser_env_bool($name, $default)
+        {
+            $value = getenv($name);
+
+            if ($value === false || $value === '') {
+                return $default;
+            }
+
+            $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+            return $parsed === null ? $default : $parsed;
+        }
+    }
+
     return array(
 
 
@@ -10,7 +36,7 @@
          * Note: once the bugs are resolved, set it to false else roBrowser will not be
          * able to work properly.
          */
-        'DEBUG'               => getenv('DEBUG') ? getenv('DEBUG') : false,
+        'DEBUG'               => robrowser_env_bool('DEBUG', false),
 
 
         /**
@@ -47,7 +73,7 @@
          *
          * Note: it required write access to the data folder.
          */
-        'CLIENT_AUTOEXTRACT'               => getenv('CLIENT_AUTOEXTRACT') ? getenv('CLIENT_AUTOEXTRACT') : true,
+        'CLIENT_AUTOEXTRACT'               => robrowser_env_bool('CLIENT_AUTOEXTRACT', true),
 
 
         /**
@@ -57,7 +83,7 @@
          * If you don't use the Grf Viewer, Model Viewer, Map Viewer and Str Viewer you
          * can just disable this feature.
          */
-        'CLIENT_ENABLESEARCH'               => getenv('CLIENT_ENABLESEARCH') ? getenv('CLIENT_ENABLESEARCH') : false,
+        'CLIENT_ENABLESEARCH'               => robrowser_env_bool('CLIENT_ENABLESEARCH', false),
 
 
         /**
@@ -78,7 +104,7 @@
          * 
          * Note: Apache and Nginx already compress responses, so this is not needed, unless you can't change the server configuration.
          */
-        'COMPRESSION_ENABLED'        => getenv('COMPRESSION_ENABLED') ? getenv('COMPRESSION_ENABLED') : false,
+        'COMPRESSION_ENABLED'        => robrowser_env_bool('COMPRESSION_ENABLED', false),
 
         /**
          * Minimum file size in bytes to apply compression
@@ -105,7 +131,7 @@
          * Note: this feature is intead to be used in a daemon mode. If you are not using a daemon mode, 
          * it's recommended to disable this feature.
          */
-        'CACHE_ENABLED'               => getenv('CACHE_ENABLED') ? getenv('CACHE_ENABLED') : false,
+        'CACHE_ENABLED'               => robrowser_env_bool('CACHE_ENABLED', false),
 
 
         /**
@@ -136,7 +162,7 @@
          * Enable missing files logging
          * When enabled, files that are requested but not found will be logged
          */
-        'MISSING_LOG_ENABLED'        => getenv('MISSING_LOG_ENABLED') ? getenv('MISSING_LOG_ENABLED') : false,
+        'MISSING_LOG_ENABLED'        => robrowser_env_bool('MISSING_LOG_ENABLED', false),
 
         /**
          * Path to the missing files log
@@ -160,7 +186,7 @@
          * Enable path mapping for Korean filenames
          * When enabled, Korean UTF-8 paths will be resolved to their GRF equivalents
          */
-        'PATH_MAPPING_ENABLED'       => getenv('PATH_MAPPING_ENABLED') ? getenv('PATH_MAPPING_ENABLED') : true,
+        'PATH_MAPPING_ENABLED'       => robrowser_env_bool('PATH_MAPPING_ENABLED', true),
 
         /**
          * Path to the mapping file (JSON format)
@@ -192,7 +218,7 @@
          * Note: this feature is intead to be used in a daemon mode. If you are not using a daemon mode, 
          * it's recommended to disable this feature.
          */
-        'WARM_CACHE_ENABLED'         => getenv('WARM_CACHE_ENABLED') ? getenv('WARM_CACHE_ENABLED') : false,
+        'WARM_CACHE_ENABLED'         => robrowser_env_bool('WARM_CACHE_ENABLED', false),
 
         /**
          * Maximum number of files to warm
@@ -214,6 +240,6 @@
          * Note: this feature is intead to be used in a daemon mode. If you are not using a daemon mode, 
          * it's recommended to disable this feature.
          */
-        'INDEX_CACHE_ENABLED'        => getenv('INDEX_CACHE_ENABLED') ? getenv('INDEX_CACHE_ENABLED') : false,
+        'INDEX_CACHE_ENABLED'        => robrowser_env_bool('INDEX_CACHE_ENABLED', false),
         'INDEX_CACHE_DIR'            => getenv('INDEX_CACHE_DIR') ? getenv('INDEX_CACHE_DIR') : 'cache/',
     );
