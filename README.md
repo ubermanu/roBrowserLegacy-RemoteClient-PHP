@@ -24,8 +24,10 @@ Because pushing directly the fullclient on a server/ftp can provoke some errors,
 
 ### 1. Add your fullclient
 
-Put your GRFs, DATA.INI and the `data/`, `BGM/`, `System/` and `AI/` folders from your fullclient
-in the `client/` directory (see [client/README.md](client/README.md)).
+Point `CLIENT_PATH` at your fullclient, or link it as `client/` in the project root.
+
+The fullclient is only ever read, never written to, so it can be mounted read-only
+(see [docs/client-files.md](docs/client-files.md)).
 
 > [!TIP]
 > To be sure to use a compatible version of your GRFs, download *GRF Builder* and repack them
@@ -96,4 +98,5 @@ extracts them from the GRF archives.
 | [docs/api.md](docs/api.md) | Health check and monitoring endpoints |
 | [docs/performance.md](docs/performance.md) | HTTP cache headers, LRU cache, warm cache |
 | [docs/korean-path-mapping.md](docs/korean-path-mapping.md) | CP949/EUC-KR filenames and `var/path-mapping.json` |
+| [docs/client-files.md](docs/client-files.md) | Fullclient layout, extracted files and lookup order |
 | [docs/faq.md](docs/faq.md) | Vhost overrides, testing your setup, how it works |

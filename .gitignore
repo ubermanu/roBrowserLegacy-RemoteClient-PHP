@@ -1,6 +1,5 @@
-# Game client files (GRFs, DATA.INI, extracted data, BGM, System, AI)
-/client/*
-!/client/README.md
+# Game client files (GRFs, DATA.INI, data, BGM, System, AI) - a dir or a symlink
+/client
 
 # Runtime files
 /var/*
