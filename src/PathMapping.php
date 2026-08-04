@@ -35,7 +35,7 @@ final class PathMapping
     /**
      * @var string Path to the mapping file
      */
-    static private $mappingFile = 'path-mapping.json';
+    static private $mappingFile = 'var/path-mapping.json';
 
     /**
      * @var bool Whether path mapping is enabled

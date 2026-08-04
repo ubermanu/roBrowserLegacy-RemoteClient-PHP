@@ -2,13 +2,13 @@
 <?php
 
 /**
- * Convert Encoding Tool - Generate path-mapping.json
+ * Convert Encoding Tool - Generate var/path-mapping.json
  * 
  * Scans GRF files for non-UTF-8 filenames (Korean CP949/EUC-KR) and generates
- * a path-mapping.json file that maps Korean UTF-8 paths to their GRF equivalents.
+ * a var/path-mapping.json file that maps Korean UTF-8 paths to their GRF equivalents.
  * 
  * Usage:
- *   bin/convert-encoding                    # Generate path-mapping.json
+ *   bin/convert-encoding                    # Generate var/path-mapping.json
  *   bin/convert-encoding --output=custom.json  # Custom output file
  *   bin/convert-encoding --dry-run         # Preview without writing
  *   bin/convert-encoding --verbose         # Show detailed progress
@@ -28,7 +28,7 @@ $dryRun = in_array('--dry-run', $args) || in_array('-n', $args);
 $verbose = in_array('--verbose', $args) || in_array('-v', $args);
 
 // Parse --output= argument
-$outputFile = 'path-mapping.json';
+$outputFile = 'var/path-mapping.json';
 foreach ($args as $arg) {
     if (strpos($arg, '--output=') === 0) {
         $outputFile = substr($arg, 9);
@@ -46,13 +46,13 @@ if ($showHelp) {
 Usage: bin/convert-encoding [options]
 
 Options:
-  --output=FILE    Output file path (default: path-mapping.json)
+  --output=FILE    Output file path (default: var/path-mapping.json)
   --dry-run, -n    Preview changes without writing file
   --verbose, -v    Show detailed progress
   --help, -h       Show this help message
 
 Examples:
-  bin/convert-encoding                    # Generate path-mapping.json
+  bin/convert-encoding                    # Generate var/path-mapping.json
   bin/convert-encoding --output=map.json  # Custom output file
   bin/convert-encoding --dry-run          # Preview only
   bin/convert-encoding --verbose          # Detailed output
@@ -61,7 +61,7 @@ What this tool does:
   1. Reads DATA.INI to find GRF files
   2. Scans each GRF for non-UTF-8 filenames (Korean CP949/EUC-KR)
   3. Converts filenames from legacy encoding to Korean UTF-8
-  4. Generates path-mapping.json with mappings:
+  4. Generates var/path-mapping.json with mappings:
      - Korean UTF-8 path → GRF path (mojibake)
 
 The Problem:
@@ -69,7 +69,7 @@ The Problem:
   GRF contains:    /data/texture/À¯ÀúÀÎÅÍÆäÀÌ½º/file.tga
 
 The Solution:
-  path-mapping.json maps the Korean path to the GRF path automatically.
+  var/path-mapping.json maps the Korean path to the GRF path automatically.
 
 
 HELP;
@@ -243,6 +243,11 @@ if ($dryRun) {
         exit(1);
     }
     
+    $outputDir = dirname($outputFile);
+    if (!is_dir($outputDir)) {
+        @mkdir($outputDir, 0755, true);
+    }
+
     $written = file_put_contents($outputFile, $jsonContent);
     
     if ($written === false) {

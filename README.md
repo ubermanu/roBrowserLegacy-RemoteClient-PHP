@@ -95,5 +95,5 @@ extracts them from the GRF archives.
 | [docs/diagnostics.md](docs/diagnostics.md) | Doctor command and validation API |
 | [docs/api.md](docs/api.md) | Health check and monitoring endpoints |
 | [docs/performance.md](docs/performance.md) | HTTP cache headers, LRU cache, warm cache |
-| [docs/korean-path-mapping.md](docs/korean-path-mapping.md) | CP949/EUC-KR filenames and `path-mapping.json` |
+| [docs/korean-path-mapping.md](docs/korean-path-mapping.md) | CP949/EUC-KR filenames and `var/path-mapping.json` |
 | [docs/faq.md](docs/faq.md) | Vhost overrides, testing your setup, how it works |

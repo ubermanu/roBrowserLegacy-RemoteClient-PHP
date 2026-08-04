@@ -10,22 +10,22 @@ GRF contains:    /data/texture/À¯ÀúÀÎÅÍÆäÀÌ½º/t_¹è°æ3-3.tga
 
 **The Solution:**
 
-The server uses a `path-mapping.json` file to map Korean UTF-8 paths to their GRF equivalents:
+The server uses a `var/path-mapping.json` file to map Korean UTF-8 paths to their GRF equivalents:
 
 ```env
 PATH_MAPPING_ENABLED=true
-PATH_MAPPING_FILE=path-mapping.json
+PATH_MAPPING_FILE=var/path-mapping.json
 ```
 
 | Setting | Description | Default |
 |---------|-------------|---------|
 | `PATH_MAPPING_ENABLED` | Enable/disable path mapping | `true` |
-| `PATH_MAPPING_FILE` | Path to mapping file | `path-mapping.json` |
+| `PATH_MAPPING_FILE` | Path to mapping file | `var/path-mapping.json` |
 
-## Generating path-mapping.json
+## Generating var/path-mapping.json
 
 ```bash
-# Generate path-mapping.json by scanning your GRFs
+# Generate var/path-mapping.json by scanning your GRFs
 bin/convert-encoding
 
 # Preview without writing (dry run)

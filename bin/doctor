@@ -180,7 +180,7 @@ function printEncodingReport($encoding)
     // Recommendations
     if ($encoding['needsConversion'] > 0) {
         echo "💡 RECOMMENDATION:\n";
-        echo "   Run 'bin/convert-encoding' to generate path-mapping.json\n";
+        echo "   Run 'bin/convert-encoding' to generate var/path-mapping.json\n";
         echo "   This will allow the server to resolve Korean filenames automatically.\n";
         echo "\n";
     }

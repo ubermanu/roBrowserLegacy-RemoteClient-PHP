@@ -200,9 +200,9 @@
 
         /**
          * Path to the mapping file (JSON format)
-         * Default: path-mapping.json
+         * Default: var/path-mapping.json
          */
-        'PATH_MAPPING_FILE'          => getenv('PATH_MAPPING_FILE') ? getenv('PATH_MAPPING_FILE') : 'path-mapping.json',
+        'PATH_MAPPING_FILE'          => getenv('PATH_MAPPING_FILE') ? getenv('PATH_MAPPING_FILE') : 'var/path-mapping.json',
 
 
         /**

@@ -460,7 +460,7 @@ final class StartupValidator
                         : '';
                     $this->addWarning(
                         "GRF path encoding: {$grfFile} has non-UTF-8 filenames. " .
-                        "Consider generating path-mapping.json" .
+                        "Consider generating var/path-mapping.json" .
                         ($samples ? " Examples: {$samples}" : '')
                     );
                 }
@@ -823,7 +823,7 @@ final class StartupValidator
         if ($results['mojibakeDetected'] > 0) {
             $this->addWarning(
                 "Mojibake detected: {$results['mojibakeDetected']} files need encoding conversion. " .
-                "Run 'bin/convert-encoding' to generate path-mapping.json"
+                "Run 'bin/convert-encoding' to generate var/path-mapping.json"
             );
         }
 

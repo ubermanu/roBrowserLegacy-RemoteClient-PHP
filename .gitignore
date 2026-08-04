@@ -7,7 +7,6 @@
 !/var/.gitkeep
 
 # Generated files
-path-mapping.json
 test_config.php
 
 # Local environment
