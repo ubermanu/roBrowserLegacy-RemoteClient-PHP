@@ -24,8 +24,8 @@ Because pushing directly the fullclient on a server/ftp can provoke some errors,
 
 ### 1. Add your fullclient
 
-Put your GRFs files and DATA.INI file in the `client/` directory.
-Add your own `data/`, `BGM/`, `System/` and `AI/` folders inside `client/` as well (see [client/README.md](client/README.md)).
+Put your GRFs, DATA.INI and the `data/`, `BGM/`, `System/` and `AI/` folders from your fullclient
+in the `client/` directory (see [client/README.md](client/README.md)).
 
 > [!TIP]
 > To be sure to use a compatible version of your GRFs, download *GRF Builder* and repack them

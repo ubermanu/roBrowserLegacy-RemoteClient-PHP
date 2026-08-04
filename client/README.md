@@ -30,5 +30,5 @@ Notes:
   by the web server. This requires write access to this directory.
 - To be sure to use a compatible version of your GRFs, download *GRF Builder*
   and repack them manually (Option > Repack type > Repack).
-- The locations can be changed with the `CLIENT_RESPATH` / `CLIENT_DATAPATH`
-  settings in `configs.php` (or the matching environment variables).
+- The location can be changed with the `CLIENT_PATH` setting in `configs.php`
+  (or the matching environment variable).

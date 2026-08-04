@@ -221,15 +221,14 @@ final class StartupValidator
     public function validateRequiredFiles()
     {
         $CONFIGS  = require dirname(__DIR__) . '/configs.php';
-        $resPath  = rtrim($CONFIGS['CLIENT_RESPATH'], '/');
-        $dataPath = rtrim($CONFIGS['CLIENT_DATAPATH'], '/');
+        $clientPath = rtrim($CONFIGS['CLIENT_PATH'], '/');
 
         $checks = [
-            ['path' => $resPath, 'type' => 'dir', 'required' => true, 'name' => $resPath . '/ folder (GRFs + DATA.INI)'],
-            ['path' => $dataPath . '/data', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/data/ folder'],
-            ['path' => $dataPath . '/BGM', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/BGM/ folder'],
-            ['path' => $dataPath . '/System', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/System/ folder'],
-            ['path' => $dataPath . '/AI', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/AI/ folder'],
+            ['path' => $clientPath, 'type' => 'dir', 'required' => true, 'name' => $clientPath . '/ folder (GRFs + DATA.INI)'],
+            ['path' => $clientPath . '/data', 'type' => 'dir', 'required' => false, 'name' => $clientPath . '/data/ folder'],
+            ['path' => $clientPath . '/BGM', 'type' => 'dir', 'required' => false, 'name' => $clientPath . '/BGM/ folder'],
+            ['path' => $clientPath . '/System', 'type' => 'dir', 'required' => false, 'name' => $clientPath . '/System/ folder'],
+            ['path' => $clientPath . '/AI', 'type' => 'dir', 'required' => false, 'name' => $clientPath . '/AI/ folder'],
             ['path' => 'var', 'type' => 'dir', 'required' => false, 'name' => 'var/ folder'],
         ];
 
@@ -237,7 +236,7 @@ final class StartupValidator
         $results = [];
 
         foreach ($checks as $check) {
-            $fullPath = getcwd() . '/' . $check['path'];
+            $fullPath = robrowser_resolve_path($check['path']);
             $exists = file_exists($fullPath);
 
             if ($check['type'] === 'dir') {
@@ -316,7 +315,7 @@ final class StartupValidator
         $results = [];
 
         // Check DATA.INI path
-        $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
+        $dataIniPath = $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
         $dataIniExists = file_exists($dataIniPath);
 
         $results['DATA_INI'] = [
@@ -385,7 +384,7 @@ final class StartupValidator
     public function validateGrfs()
     {
         $CONFIGS = require dirname(__DIR__) . '/configs.php';
-        $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
+        $dataIniPath = $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
 
         if (!file_exists($dataIniPath)) {
             $this->validationResults['grfs'] = ['valid' => false, 'reason' => 'DATA.INI not found'];
@@ -418,7 +417,7 @@ final class StartupValidator
         $hasInvalidGrf = false;
 
         foreach ($grfFiles as $grfFile) {
-            $grfPath = $CONFIGS['CLIENT_RESPATH'] . $grfFile;
+            $grfPath = $CONFIGS['CLIENT_PATH'] . $grfFile;
 
             if (!file_exists($grfPath)) {
                 $this->addError("GRF not found: {$grfFile}");
@@ -753,7 +752,7 @@ final class StartupValidator
     public function validateEncodingDeep()
     {
         $CONFIGS = require dirname(__DIR__) . '/configs.php';
-        $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
+        $dataIniPath = $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
 
         $results = [
             'totalFiles' => 0,
@@ -788,7 +787,7 @@ final class StartupValidator
         }
 
         foreach ($grfFiles as $grfFile) {
-            $grfPath = $CONFIGS['CLIENT_RESPATH'] . $grfFile;
+            $grfPath = $CONFIGS['CLIENT_PATH'] . $grfFile;
             if (!file_exists($grfPath)) {
                 continue;
             }
@@ -1140,7 +1139,7 @@ final class StartupValidator
         
         // Only check if GRFs exist, don't validate format (faster)
         $CONFIGS = require dirname(__DIR__) . '/configs.php';
-        $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
+        $dataIniPath = $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
         
         if (!file_exists($dataIniPath)) {
             $this->addError("DATA.INI not found");

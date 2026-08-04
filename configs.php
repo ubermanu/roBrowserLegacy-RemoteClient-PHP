@@ -1,30 +1,6 @@
 <?php
 
-    if (!function_exists('robrowser_env_bool')) {
-        /**
-         * Read a boolean environment variable.
-         *
-         * `getenv('X') ? getenv('X') : $default` cannot express "off": the value
-         * is always a non-empty string, so 'false' / 'off' / 'no' all read as true,
-         * while '0' and '' fall back to $default instead of meaning false.
-         *
-         * @param string $name
-         * @param bool $default Used when the variable is unset, empty or unparsable.
-         * @return bool
-         */
-        function robrowser_env_bool($name, $default)
-        {
-            $value = getenv($name);
-
-            if ($value === false || $value === '') {
-                return $default;
-            }
-
-            $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-            return $parsed === null ? $default : $parsed;
-        }
-    }
+    require_once __DIR__ . '/src/functions.php';
 
     return array(
 
@@ -43,20 +19,12 @@
          * Define where is located your full client files
          * By default it's on the directory 'client/' but you can update it if you need
          *
-         * Note: The files required in this directory are DATA.INI and your GRFs files.
-         *       All others files will not be read.
+         * This directory holds DATA.INI and your GRFs files, as well as the game
+         * content folders (data/, BGM/, System/, AI/). Requested files are looked up
+         * on disk there first, and extracted GRF files are stored there too
+         * (see CLIENT_AUTOEXTRACT).
          */
-        'CLIENT_RESPATH'               =>     getenv('CLIENT_RESPATH') ? getenv('CLIENT_RESPATH') : 'client/',
-
-
-        /**
-         * Define where is located the game content folders (data/, BGM/, System/, AI/).
-         * Requested files are looked up on disk in this directory first, and extracted
-         * GRF files are stored there (see CLIENT_AUTOEXTRACT).
-         *
-         * By default it's the same gitignored 'client/' directory as CLIENT_RESPATH.
-         */
-        'CLIENT_DATAPATH'              =>     getenv('CLIENT_DATAPATH') ? getenv('CLIENT_DATAPATH') : 'client/',
+        'CLIENT_PATH'                  =>     robrowser_env_path('CLIENT_PATH', 'client/'),
 
 
         /**
@@ -64,7 +32,7 @@
          * This file is used to know the GRFs the remote client have to load and the right
          * order to load them.
          *
-         * Note: this file name is CASE SENSITIVE and should be located in the CLIENT_RESPATH folder
+         * Note: this file name is CASE SENSITIVE and should be located in the CLIENT_PATH folder
          *
          * Example of the content of this file:
          *

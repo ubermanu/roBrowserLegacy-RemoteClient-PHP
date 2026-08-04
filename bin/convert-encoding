@@ -102,7 +102,7 @@ if (!$iconvAvailable && !$mbstringAvailable) {
 
 // Load configs
 $CONFIGS = require('configs.php');
-$dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
+$dataIniPath = $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
 
 if (!file_exists($dataIniPath)) {
     echo "❌ ERROR: DATA.INI not found at: {$dataIniPath}\n\n";
@@ -152,7 +152,7 @@ $encodingsToTry = ['CP949', 'EUC-KR', 'ISO-8859-1', 'CP1252'];
 
 // Process each GRF
 foreach ($grfFiles as $index => $grfFile) {
-    $grfPath = $CONFIGS['CLIENT_RESPATH'] . $grfFile;
+    $grfPath = $CONFIGS['CLIENT_PATH'] . $grfFile;
     
     echo "📂 [{$index}] Processing: {$grfFile}\n";
     
