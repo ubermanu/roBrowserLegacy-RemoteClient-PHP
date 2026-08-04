@@ -340,11 +340,12 @@ function processGrf($grfPath, $grfFile, $encodingsToTry, $verbose) {
         $position = 0;
         
         // First pass: detect encoding by sampling
+        // Scan the whole table until enough samples are collected: non-UTF-8
+        // entries may only appear well past the first few hundred files.
         $nonUtf8Samples = [];
-        $sampleLimit = min($fileCount, 500);
         $tempPosition = 0;
-        
-        for ($i = 0; $i < $sampleLimit && $tempPosition < strlen($tableData); $i++) {
+
+        for ($i = 0; $i < $fileCount && $tempPosition < strlen($tableData); $i++) {
             $end = $tempPosition;
             while ($end < strlen($tableData) && ord($tableData[$end]) !== 0) {
                 $end++;
