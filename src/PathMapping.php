@@ -322,7 +322,7 @@ final class PathMapping
     static public function getStats()
     {
         $total = self::$stats['hits'] + self::$stats['misses'];
-        $hitRate = $total > 0 ? round(($stats['hits'] / $total) * 100, 2) : 0;
+        $hitRate = $total > 0 ? round((self::$stats['hits'] / $total) * 100, 2) : 0;
 
         return [
             'enabled' => self::$enabled,
