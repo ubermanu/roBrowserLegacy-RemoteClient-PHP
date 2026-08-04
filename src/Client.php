@@ -117,7 +117,7 @@ final class Client
 			return;
 		}
 
-		// $data_ini is already a full path relative to the project root (CLIENT_RESPATH + CLIENT_DATAINI)
+		// $data_ini is already a full path relative to the project root (CLIENT_PATH + CLIENT_DATAINI)
 		$path = self::$data_ini;
 
 		if (!file_exists($path)) {
@@ -267,7 +267,7 @@ final class Client
 	 */
 	static private function getDataDirPath()
 	{
-		return getcwd() . '/' . self::$path . 'data';
+		return robrowser_resolve_path(self::$path . 'data');
 	}
 
 
@@ -588,7 +588,7 @@ final class Client
 
 		// storing bmp images as png
 		if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'bmp') {
-			$img  = imagecreatefrombmpstring($content);
+			$img  = robrowser_image_create_from_bmp_string($content);
 			$path = str_ireplace('.bmp', '.png', $local_path);
 			imagepng($img, $path);
 			return file_get_contents($path);
@@ -625,7 +625,7 @@ final class Client
 			return stripos($item, $filter) !== false;
 		});
 
-		$base = rtrim(getcwd() . '/' . self::$path, '/');
+		$base = rtrim(robrowser_resolve_path(self::$path), '/');
 		$matches = array_map(function ($i) use ($base) {
 			return str_replace($base, '', $i);
 		}, $matches);

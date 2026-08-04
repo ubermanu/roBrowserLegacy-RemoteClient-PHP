@@ -22,4 +22,4 @@ spl_autoload_register(function ($class) {
 });
 
 // Function files (not autoloadable via PSR-4)
-require __DIR__ . '/src/Bmp.php';
+require_once __DIR__ . '/src/functions.php';

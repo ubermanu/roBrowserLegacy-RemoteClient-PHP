@@ -1,17 +1,88 @@
 <?php
 
 /**
-* @fileoverview Bmp Loader
-* @author Vincent Thibault (alias KeyWorld - Twitter: @robrowser)
-* @version 1.0.1
-* TODO: for now, RO Emblem doesn't seems to support some bmp features, but maybe in future add support for :
-* - 16 and 32 bits image.
-* - RLE ?
-* - Read other DIBHeader format ?
-*/
+ * Read a boolean environment variable.
+ *
+ * `getenv('X') ? getenv('X') : $default` cannot express "off": the value
+ * is always a non-empty string, so 'false' / 'off' / 'no' all read as true,
+ * while '0' and '' fall back to $default instead of meaning false.
+ *
+ * @param string $name
+ * @param bool $default Used when the variable is unset, empty or unparsable.
+ * @return bool
+ */
+function robrowser_env_bool($name, $default)
+{
+    $value = getenv($name);
+
+    if ($value === false || $value === '') {
+        return $default;
+    }
+
+    $parsed = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+    return $parsed === null ? $default : $parsed;
+}
 
 
-function imagecreatefrombmpstring($data) {
+/**
+ * Read a directory path environment variable, normalised with a trailing slash.
+ *
+ * Directory settings get concatenated with filenames (CLIENT_PATH . CLIENT_DATAINI),
+ * so a missing slash would silently produce paths like 'clientDATA.INI'.
+ *
+ * @param string $name
+ * @param string $default Used when the variable is unset or empty.
+ * @return string
+ */
+function robrowser_env_path($name, $default)
+{
+    $value = getenv($name);
+
+    if ($value === false || $value === '') {
+        $value = $default;
+    }
+
+    return rtrim($value, '/\\') . '/';
+}
+
+
+/**
+ * Resolve a configured path against the project root.
+ *
+ * Configured paths are usually relative to the project root, but may also be
+ * absolute - in which case prefixing the working directory would corrupt them.
+ *
+ * @param string $path
+ * @return string
+ */
+function robrowser_resolve_path($path)
+{
+    // Unix (/foo) and Windows (C:\foo, \\server\share) absolute paths
+    if (preg_match('#^([a-zA-Z]:[\\\\/]|[\\\\/])#', $path)) {
+        return $path;
+    }
+
+    return getcwd() . '/' . $path;
+}
+
+
+/**
+ * Bmp loader: decode a BMP image from a string into a GD image resource.
+ *
+ * @author Vincent Thibault (alias KeyWorld - Twitter: @robrowser)
+ *
+ * TODO: for now, RO Emblem doesn't seems to support some bmp features, but maybe
+ * in future add support for :
+ * - 16 and 32 bits image.
+ * - RLE ?
+ * - Read other DIBHeader format ?
+ *
+ * @param string $data
+ * @return resource|\GdImage|false
+ */
+function robrowser_image_create_from_bmp_string($data)
+{
 
 	// Read header
 	extract( unpack("a2signature/x8/Voffset/x4/Vwidth/Vheight/x2/vbits", substr($data, 0, 30)));
