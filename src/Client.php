@@ -66,7 +66,7 @@ final class Client
 	 */
 	static private $indexCacheConfig = [
 		'enabled' => true,
-		'dir' => 'cache/',
+		'dir' => 'var/cache/',
 		'encoding' => 'CP949'
 	];
 
@@ -87,7 +87,7 @@ final class Client
 		self::$indexCacheConfig['encoding'] = $grfEncoding;
 		if (isset($GLOBALS['CONFIGS'])) {
 			self::$indexCacheConfig['enabled'] = isset($GLOBALS['CONFIGS']['INDEX_CACHE_ENABLED']) ? $GLOBALS['CONFIGS']['INDEX_CACHE_ENABLED'] : true;
-			self::$indexCacheConfig['dir'] = isset($GLOBALS['CONFIGS']['INDEX_CACHE_DIR']) ? $GLOBALS['CONFIGS']['INDEX_CACHE_DIR'] : 'cache/';
+			self::$indexCacheConfig['dir'] = isset($GLOBALS['CONFIGS']['INDEX_CACHE_DIR']) ? $GLOBALS['CONFIGS']['INDEX_CACHE_DIR'] : 'var/cache/';
 		}
 
 		// Set GRF encoding

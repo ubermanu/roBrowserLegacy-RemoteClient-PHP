@@ -16,7 +16,7 @@ final class MissingFilesLog
     /**
      * @var string Log file path
      */
-    static private $logFile = 'logs/missing-files.log';
+    static private $logFile = 'var/logs/missing-files.log';
 
     /**
      * @var array In-memory cache of missing files (for current request)

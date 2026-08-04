@@ -176,9 +176,9 @@
 
         /**
          * Path to the missing files log
-         * Default: logs/missing-files.log
+         * Default: var/logs/missing-files.log
          */
-        'MISSING_LOG_FILE'           => getenv('MISSING_LOG_FILE') ? getenv('MISSING_LOG_FILE') : 'logs/missing-files.log',
+        'MISSING_LOG_FILE'           => getenv('MISSING_LOG_FILE') ? getenv('MISSING_LOG_FILE') : 'var/logs/missing-files.log',
 
         /**
          * Maximum entries to keep in memory per request
@@ -251,5 +251,5 @@
          * it's recommended to disable this feature.
          */
         'INDEX_CACHE_ENABLED'        => robrowser_env_bool('INDEX_CACHE_ENABLED', false),
-        'INDEX_CACHE_DIR'            => getenv('INDEX_CACHE_DIR') ? getenv('INDEX_CACHE_DIR') : 'cache/',
+        'INDEX_CACHE_DIR'            => getenv('INDEX_CACHE_DIR') ? getenv('INDEX_CACHE_DIR') : 'var/cache/',
     );

@@ -35,8 +35,9 @@ Because pushing directly the fullclient on a server/ftp can provoke some errors,
 │   ├── BGM/            #   Served as /BGM/...
 │   ├── System/         #   Served as /System/...
 │   └── AI/             #   Served as /AI/...
-├── cache/              # Runtime index cache (gitignored)
-├── logs/               # Runtime logs (gitignored)
+├── var/                # Runtime files (gitignored)
+│   ├── cache/          #   Index cache
+│   └── logs/           #   Logs
 ├── tools/              # CLI tools (encoding conversion)
 └── docker/             # Apache / Nginx container recipes
 ```

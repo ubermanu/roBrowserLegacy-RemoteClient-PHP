@@ -230,7 +230,7 @@ final class StartupValidator
             ['path' => $dataPath . '/BGM', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/BGM/ folder'],
             ['path' => $dataPath . '/System', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/System/ folder'],
             ['path' => $dataPath . '/AI', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/AI/ folder'],
-            ['path' => 'logs', 'type' => 'dir', 'required' => false, 'name' => 'logs/ folder'],
+            ['path' => 'var/logs', 'type' => 'dir', 'required' => false, 'name' => 'var/logs/ folder'],
         ];
 
         $hasErrors = false;
