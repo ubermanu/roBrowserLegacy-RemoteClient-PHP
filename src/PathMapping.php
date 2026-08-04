@@ -224,9 +224,23 @@ final class PathMapping
         // Characters like À, Á, Â, Ã, Ä, Å, Æ, Ç, È, É, Ê, Ë, etc.
         // /u is required: this file is UTF-8, so without it PCRE reads the class
         // byte-wise as [\x80-\xC3] instead of the intended U+00C0-U+00FF.
-        $mojibakePattern = '/[\x{00C0}-\x{00FF}]{2,}/u';
+        if (preg_match('/[\x{00C0}-\x{00FF}]{2,}/u', $path) === 1) {
+            return true;
+        }
 
-        return preg_match($mojibakePattern, $path) === 1;
+        // The pattern above misses plenty of real Korean names: only the CP949
+        // lead bytes >= 0xC0 land in that range, so a short name can end up with
+        // none of them adjacent. 블레싱.tga -> ºí·¹½Ì.tga has just í and Ì, both
+        // isolated.
+        //
+        // Any character in the Latin-1 supplement is a candidate (mojibake bytes
+        // are always >= 0x80), so let the decoder be the judge: it only returns
+        // a string when the bytes really do form Korean CP949.
+        if (preg_match('/[\x{0080}-\x{00FF}]/u', $path) !== 1) {
+            return false;
+        }
+
+        return self::decodeMojibake($path) !== null;
     }
 
 
