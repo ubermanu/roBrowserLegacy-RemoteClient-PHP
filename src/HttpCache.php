@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview HTTP Cache Helper - Implements ETag and Cache-Control headers
  * @author roBrowser Legacy Team

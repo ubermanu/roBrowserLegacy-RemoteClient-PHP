@@ -13,12 +13,13 @@
  * @version 1.0.0
  */
 
+use RoBrowser\RemoteClient\StartupValidator;
+
 // Change to script directory
 chdir(dirname(__FILE__));
 
-// Include required files
-require_once('Debug.php');
-require_once('StartupValidator.php');
+// Register autoloader (Composer if installed, built-in fallback otherwise)
+require_once __DIR__ . '/bootstrap.php';
 
 // Parse command line arguments
 $args = array_slice($argv, 1);

@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
 * @fileoverview Grf - Load and Parse .grf file (versions 0x200 and 0x300 with DES encryption support).
 * @author Vincent Thibault (alias KeyWorld - Twitter: @robrowser)
@@ -294,7 +296,7 @@ class Grf
 	{
 		// If input looks like mojibake (UTF-8 version of Latin-1 misread),
 		// we need to get the raw bytes by converting it back to Latin-1.
-		if (class_exists('PathMapping') && PathMapping::isMojibake($filename)) {
+		if (class_exists(PathMapping::class) && PathMapping::isMojibake($filename)) {
 			return mb_convert_encoding($filename, 'ISO-8859-1', 'UTF-8');
 		}
 
@@ -304,7 +306,7 @@ class Grf
 
 		// Fallback: if filename is UTF-8 but looks like it should be legacy
 		// we can try to use PathMapping if available
-		if (class_exists('PathMapping') && PathMapping::containsKorean($filename)) {
+		if (class_exists(PathMapping::class) && PathMapping::containsKorean($filename)) {
 			$encoded = PathMapping::encodeToMojibake($filename);
 			if ($encoded !== null) {
 				return $encoded;
@@ -490,7 +492,7 @@ class Grf
 			// Decode filename if encoding is set
 			if ($this->encoding && extension_loaded('mbstring')) {
 				$filename = mb_convert_encoding($filename, 'UTF-8', $this->encoding);
-			} elseif (class_exists('PathMapping') && PathMapping::isMojibake($filename)) {
+			} elseif (class_exists(PathMapping::class) && PathMapping::isMojibake($filename)) {
 				$decoded = PathMapping::decodeMojibake($filename);
 				if ($decoded !== null) {
 					$filename = $decoded;

@@ -1,10 +1,20 @@
-/AI/*
-/BGM/*
+# Game client files (GRFs, DATA.INI, extracted data, BGM, System, AI)
 /data/*
-/resources/*
-/System/*
-.env
-.idea
+!/data/README.md
+
+# Composer
+/vendor/
+
+# Runtime files
+/cache/*
+!/cache/.gitkeep
+/logs/*
+!/logs/.gitkeep
+
 # Generated files
 path-mapping.json
 test_config.php
+
+# Local environment
+.env
+.idea

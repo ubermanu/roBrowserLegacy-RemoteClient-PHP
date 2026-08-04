@@ -1,19 +1,21 @@
 <?php
 
-// Include library
-require_once('Debug.php');
-require_once('LRUCache.php');
-require_once('Grf.php');
-require_once('GrfDES.php');
-require_once('Bmp.php');
-require_once('Client.php');
-require_once('Compression.php');
-require_once('HttpCache.php');
-require_once('MissingFilesLog.php');
-require_once('HealthCheck.php');
-require_once('PathMapping.php');
-require_once('StartupValidator.php');
-$CONFIGS = require_once('configs.php');
+use RoBrowser\RemoteClient\Client;
+use RoBrowser\RemoteClient\Compression;
+use RoBrowser\RemoteClient\Debug;
+use RoBrowser\RemoteClient\HealthCheck;
+use RoBrowser\RemoteClient\HttpCache;
+use RoBrowser\RemoteClient\MissingFilesLog;
+use RoBrowser\RemoteClient\PathMapping;
+use RoBrowser\RemoteClient\StartupValidator;
+
+// Register autoloader (Composer if installed, built-in fallback otherwise)
+require_once dirname(__DIR__) . '/bootstrap.php';
+
+// All configured paths are relative to the project root
+chdir(dirname(__DIR__));
+
+$CONFIGS = require 'configs.php';
 
 // Apply configs
 if ($CONFIGS['DEBUG']) {
@@ -41,7 +43,7 @@ PathMapping::configure([
 ]);
 
 
-Client::$path        =  '';
+Client::$path        =  $CONFIGS['CLIENT_DATAPATH'];
 Client::$data_ini    =  $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
 Client::$AutoExtract =  (bool)$CONFIGS['CLIENT_AUTOEXTRACT'];
 
@@ -160,7 +162,7 @@ if (empty($_SERVER['REDIRECT_STATUS']) || $_SERVER['REDIRECT_STATUS'] != 404 || 
 // Decode path
 $path      = str_replace('\\', '/', mb_convert_encoding(urldecode($_SERVER['REQUEST_URI']),'UTF-8'));
 $path      = preg_replace('/\?.*/', '', $path); // remove query
-$directory = basename(dirname(__FILE__));
+$directory = basename(dirname(__DIR__));
 
 // Check Allowed directory
 if (!preg_match( '/\/('. $directory . '\/)?(data|BGM)\//', $path)) {

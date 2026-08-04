@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
 * @fileoverview Debugging
 * @author Vincent Thibault (alias KeyWorld - Twitter: @robrowser)

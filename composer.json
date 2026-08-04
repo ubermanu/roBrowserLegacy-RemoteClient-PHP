@@ -1,0 +1,26 @@
+{
+    "name": "robrowser/remote-client-php",
+    "description": "Remote client for roBrowser Legacy - serves game assets (data, BGM, System, AI) from GRF archives over HTTP.",
+    "type": "project",
+    "keywords": ["robrowser", "ragnarok", "grf", "remote-client"],
+    "require": {
+        "php": ">=8.3",
+        "ext-mbstring": "*",
+        "ext-zlib": "*"
+    },
+    "suggest": {
+        "ext-gd": "Required to convert BMP images to PNG",
+        "ext-iconv": "Improves Korean (CP949/EUC-KR) filename encoding detection"
+    },
+    "autoload": {
+        "psr-4": {
+            "RoBrowser\\RemoteClient\\": "src/"
+        },
+        "files": [
+            "src/Bmp.php"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

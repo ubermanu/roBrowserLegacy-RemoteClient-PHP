@@ -20,8 +20,14 @@ RUN rm -f /etc/apache2/sites-available/000-default.conf
 
 RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
-    DocumentRoot /var/www/html
+    DocumentRoot /var/www/html/public
     ErrorDocument 404 /index.php
+
+    # Game content lives in the (gitignored) data/ directory
+    Alias /data   /var/www/html/data/data
+    Alias /BGM    /var/www/html/data/BGM
+    Alias /System /var/www/html/data/System
+    Alias /AI     /var/www/html/data/AI
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -30,7 +36,13 @@ RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
         Header set Access-Control-Allow-Origin "*"
         Header set Access-Control-Allow-Headers "X-Application"
     </IfModule>
-    <Directory /var/www/html>
+    <Directory /var/www/html/public>
+        Options +FollowSymLinks -MultiViews
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    <Directory /var/www/html/data>
         Options +FollowSymLinks -MultiViews
         AllowOverride None
         Require all granted

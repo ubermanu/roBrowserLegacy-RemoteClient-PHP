@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview PathMapping - Korean filename encoding support
  * @author roBrowser Legacy Team ( Mike )
@@ -250,7 +252,7 @@ final class PathMapping
             if ($korean && self::containsKorean($korean)) {
                 return $korean;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Conversion failed
         }
 
@@ -280,7 +282,7 @@ final class PathMapping
             
             $mojibake = mb_convert_encoding($cp949, 'UTF-8', 'ISO-8859-1');
             return $mojibake;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Conversion failed
         }
 

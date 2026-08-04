@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview GRF DES Decryption
  * @author roBrowser Legacy Team

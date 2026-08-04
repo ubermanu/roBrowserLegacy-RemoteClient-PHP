@@ -15,12 +15,22 @@
 
         /**
          * Define where is located your full client files
-         * By default it's on the directory 'resources/' but you can update it if you need
+         * By default it's on the directory 'data/' but you can update it if you need
          *
          * Note: The files required in this directory are DATA.INI and your GRFs files.
          *       All others files will not be read.
          */
-        'CLIENT_RESPATH'               =>     getenv('CLIENT_RESPATH') ? getenv('CLIENT_RESPATH') : 'resources/',
+        'CLIENT_RESPATH'               =>     getenv('CLIENT_RESPATH') ? getenv('CLIENT_RESPATH') : 'data/',
+
+
+        /**
+         * Define where is located the game content folders (data/, BGM/, System/, AI/).
+         * Requested files are looked up on disk in this directory first, and extracted
+         * GRF files are stored there (see CLIENT_AUTOEXTRACT).
+         *
+         * By default it's the same gitignored 'data/' directory as CLIENT_RESPATH.
+         */
+        'CLIENT_DATAPATH'              =>     getenv('CLIENT_DATAPATH') ? getenv('CLIENT_DATAPATH') : 'data/',
 
 
         /**
@@ -28,7 +38,7 @@
          * This file is used to know the GRFs the remote client have to load and the right
          * order to load them.
          *
-         * Note: this file name is CASE SENSITIVE and should be located in resources/ folder
+         * Note: this file name is CASE SENSITIVE and should be located in the CLIENT_RESPATH folder
          *
          * Example of the content of this file:
          *
