@@ -3,10 +3,8 @@
 !/client/README.md
 
 # Runtime files
-/var/cache/*
-!/var/cache/.gitkeep
-/var/logs/*
-!/var/logs/.gitkeep
+/var/*
+!/var/.gitkeep
 
 # Generated files
 path-mapping.json
