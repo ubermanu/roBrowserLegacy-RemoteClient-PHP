@@ -66,6 +66,21 @@
 
 
         /**
+         * Look up files in CLIENT_PATH without regard to case.
+         *
+         * Client files come from Windows, where casing never mattered, so the
+         * name a client asks for and the name on disk often disagree (the client
+         * wants 'System/Font/', kRO ships 'System/font/'). GRF lookups already
+         * ignore case, so this keeps the two consistent - and only runs for
+         * paths that would otherwise be a 404.
+         *
+         * Turn it off if you would rather see those 404s, e.g. to catch wrong
+         * paths in a client's own code.
+         */
+        'CLIENT_CASE_INSENSITIVE'          => robrowser_env_bool('CLIENT_CASE_INSENSITIVE', true),
+
+
+        /**
          * Do we enable post method to get back information about files stored in GRF ?
          * It's used in Grf Viewer to list files of a repertoire or to search files.
          *

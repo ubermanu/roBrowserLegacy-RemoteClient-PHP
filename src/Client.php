@@ -46,6 +46,16 @@ final class Client
 	static public $AutoExtract = false;
 
 	/**
+	 * @var bool Resolve on-disk paths ignoring case, like the GRF index does
+	 */
+	static public $CaseInsensitive = true;
+
+	/**
+	 * @var array Directory listings, keyed by directory: lowercased entry name => real name
+	 */
+	static private $dirEntries = [];
+
+	/**
 	 * @var array Stores the file list on the data directory.
 	 */
 	static public $FileList = [];
@@ -296,6 +306,91 @@ final class Client
 
 
 	/**
+	 * Resolve a requested path against a read root, ignoring case.
+	 *
+	 * Client files come from Windows, where casing never mattered, so the name
+	 * a client asks for and the name on disk often disagree: the client wants
+	 * 'System/Font/SCDream4.otf', kRO ships 'System/font/SCDream4.otf'. GRF
+	 * lookups already ignore case - buildFileIndex() keys on the lowercased
+	 * path - so without this the same name resolves inside a GRF and 404s on
+	 * disk.
+	 *
+	 * Walks the path a segment at a time rather than indexing the whole client:
+	 * a client is millions of files, and this only ever runs for a path that
+	 * would otherwise 404, at a scandir() per directory (memoized).
+	 *
+	 * @param string $root Read root, trailing slash included
+	 * @param string $relative_path Requested path, forward slashes
+	 * @return string|false Path as it exists on disk, or false if no match
+	 */
+	static private function resolveIgnoringCase($root, $relative_path)
+	{
+		$resolved = rtrim($root, '/');
+
+		foreach (explode('/', $relative_path) as $segment) {
+			if ($segment === '' || $segment === '.') {
+				continue;
+			}
+
+			// An exact match costs nothing, only the mismatching segment pays
+			if (file_exists($resolved . '/' . $segment)) {
+				$resolved .= '/' . $segment;
+				continue;
+			}
+
+			$entries = self::readDirEntries($resolved);
+			$folded  = strtolower($segment);
+
+			if (!isset($entries[$folded])) {
+				return false;
+			}
+
+			$resolved .= '/' . $entries[$folded];
+		}
+
+		return $resolved;
+	}
+
+
+	/**
+	 * List a directory as a lowercased name => real name map, memoized.
+	 *
+	 * @param string $dir
+	 * @return array
+	 */
+	static private function readDirEntries($dir)
+	{
+		if (isset(self::$dirEntries[$dir])) {
+			return self::$dirEntries[$dir];
+		}
+
+		$entries = array();
+		$names   = is_dir($dir) ? @scandir($dir) : false;
+
+		if ($names !== false) {
+			foreach ($names as $name) {
+				if ($name === '.' || $name === '..') {
+					continue;
+				}
+
+				$folded = strtolower($name);
+
+				// Names differing only in case can coexist on Linux. scandir()
+				// sorts, so the winner is stable instead of filesystem order.
+				if (isset($entries[$folded])) {
+					Debug::write("Case collision in {$dir}: kept '{$entries[$folded]}', ignored '{$name}'", 'error');
+					continue;
+				}
+
+				$entries[$folded] = $name;
+			}
+		}
+
+		return self::$dirEntries[$dir] = $entries;
+	}
+
+
+	/**
 	 * Absolute paths of the game "data" directories, for each read root
 	 *
 	 * @return array
@@ -475,6 +570,17 @@ final class Client
 		foreach (self::getReadPaths() as $root) {
 			$local_path        = $root . $relative_path;
 			$local_pathEncoded = mb_convert_encoding($local_path, 'UTF-8');
+
+			// The name on disk may only differ in case from the requested one
+			if (self::$CaseInsensitive && !file_exists($local_pathEncoded)) {
+				$resolved = self::resolveIgnoringCase($root, $relative_path);
+
+				if ($resolved !== false) {
+					Debug::write('Resolved ignoring case to ' . $resolved, 'info');
+					// Already a real path, so no encoding conversion to redo
+					$local_path = $local_pathEncoded = $resolved;
+				}
+			}
 
 			if (!file_exists($local_pathEncoded) || is_dir($local_pathEncoded) || !is_readable($local_pathEncoded)) {
 				Debug::write('File not found at ' . $local_path);

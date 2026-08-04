@@ -47,6 +47,7 @@ Client::$path        =  $CONFIGS['CLIENT_PATH'];
 Client::$extract_path =  $CONFIGS['EXTRACT_PATH'];
 Client::$data_ini    =  $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
 Client::$AutoExtract =  (bool)$CONFIGS['CLIENT_AUTOEXTRACT'];
+Client::$CaseInsensitive = (bool)$CONFIGS['CLIENT_CASE_INSENSITIVE'];
 
 
 // Initialize client with cache configuration
@@ -165,14 +166,21 @@ $path      = str_replace('\\', '/', mb_convert_encoding(urldecode($_SERVER['REQU
 $path      = preg_replace('/\?.*/', '', $path); // remove query
 $directory = basename(dirname(__DIR__));
 
+// The game content roots, matching what the web servers expose. Matched
+// case-insensitively: a request may spell the root as the client code does
+// rather than as the directory on disk (see CLIENT_CASE_INSENSITIVE), and
+// Client::getFile() resolves the real name from there.
+$roots = 'data|BGM|System|AI';
+
 // Check Allowed directory
-if (!preg_match( '/\/('. $directory . '\/)?(data|BGM)\//', $path)) {
-    Debug::write('Forbidden directory, you can just access files located in data and BGM folder.', 'error');
+if (!preg_match( '/\/('. $directory . '\/)?('. $roots . ')\//i', $path)) {
+    Debug::write('Forbidden directory, you can just access files located in the ' . str_replace('|', ', ', $roots) . ' folders.', 'error');
     Debug::output();
 }
 
-// Get file
-$path = preg_replace('/(.*('. $directory . '\/)?)(data|BGM\/.*)/', '$3', $path );
+// Get file. Lazily matched up to the *first* root, otherwise a path that
+// repeats one ('/AI/USER_AI/AI.lua') would be cut at the last occurrence.
+$path = preg_replace('/^.*?('. $directory . '\/)?((?:'. $roots . ')\/.*)$/i', '$2', $path );
 $path = str_replace('/', '\\', $path);
 $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 $file = Client::getFile($path);

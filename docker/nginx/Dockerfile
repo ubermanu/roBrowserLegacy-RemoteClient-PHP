@@ -62,6 +62,10 @@ server {
     # Game content is served from two roots: files extracted from the GRFs in
     # var/, then the read-only client itself. Anything on neither falls back to
     # index.php, which extracts it.
+    #
+    # try_files is case-sensitive, so a request whose case doesn't match the
+    # file on disk also lands on index.php - it resolves the real name from
+    # there (see CLIENT_CASE_INSENSITIVE).
     location /data/ {
         alias /var/www/html/var/extracted/data/;
         try_files $uri @client;

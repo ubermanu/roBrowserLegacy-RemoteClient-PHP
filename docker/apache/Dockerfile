@@ -66,10 +66,12 @@ RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
         AllowOverride None
         Require all granted
 
-        <IfModule mod_speling.c>
-            CheckSpelling On
-            CheckCaseOnly On
-        </IfModule>
+        # Client files are named as Windows left them, so a request often only
+        # differs from the file on disk in case. mod_speling would look like the
+        # fix, but it answers with a redirect to the canonical server name,
+        # which behind a reverse proxy is an internal hostname the browser
+        # cannot resolve. The 404 goes to index.php instead, which resolves the
+        # real name in-process (see CLIENT_CASE_INSENSITIVE).
     </Directory>
 
     <IfModule mod_gzip.c>
