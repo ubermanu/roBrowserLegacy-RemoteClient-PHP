@@ -1,0 +1,13 @@
+.git
+.github
+.env
+client/*
+!client/README.md
+var/cache/*
+var/logs/*
+docker/test
+docs
+flake.nix
+flake.lock
+path-mapping.json
+README.md

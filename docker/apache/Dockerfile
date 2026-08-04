@@ -90,6 +90,16 @@ RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 EOF
 
+COPY bootstrap.php configs.php ./
+COPY src/ ./src/
+COPY public/ ./public/
+COPY bin/ ./bin/
+
+# client/ is a mount point, so its ownership comes from the host
+# var/ subdirs are created at runtime, so it only needs to be writable
+RUN mkdir -p var client && \
+  chown www-data:www-data var
+
 EXPOSE 80
 
 USER www-data
