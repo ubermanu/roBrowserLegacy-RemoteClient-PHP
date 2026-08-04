@@ -59,19 +59,20 @@ server {
         text/plain
         application/xml;
 
-    # Game content lives in the client/ mount. Files already on disk are served
-    # statically; anything else falls back to index.php which extracts them
-    # from the GRF archives.
+    # Game content is served from two roots: files extracted from the GRFs in
+    # var/, then the read-only client itself. Anything on neither falls back to
+    # index.php, which extracts it.
     location /data/ {
-        alias /var/www/html/client/data/;
-        try_files $uri /index.php$is_args$args;
+        alias /var/www/html/var/extracted/data/;
+        try_files $uri @client;
     }
 
     location /BGM/ {
-        alias /var/www/html/client/BGM/;
-        try_files $uri /index.php$is_args$args;
+        alias /var/www/html/var/extracted/BGM/;
+        try_files $uri @client;
     }
 
+    # Nothing is ever extracted into these, so they come straight from the client
     location /System/ {
         alias /var/www/html/client/System/;
         try_files $uri /index.php$is_args$args;
@@ -79,6 +80,11 @@ server {
 
     location /AI/ {
         alias /var/www/html/client/AI/;
+        try_files $uri /index.php$is_args$args;
+    }
+
+    location @client {
+        root /var/www/html/client;
         try_files $uri /index.php$is_args$args;
     }
 

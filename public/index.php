@@ -44,6 +44,7 @@ PathMapping::configure([
 
 
 Client::$path        =  $CONFIGS['CLIENT_PATH'];
+Client::$extract_path =  $CONFIGS['EXTRACT_PATH'];
 Client::$data_ini    =  $CONFIGS['CLIENT_PATH'] . $CONFIGS['CLIENT_DATAINI'];
 Client::$AutoExtract =  (bool)$CONFIGS['CLIENT_AUTOEXTRACT'];
 

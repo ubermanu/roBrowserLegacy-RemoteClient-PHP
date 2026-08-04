@@ -22,6 +22,13 @@ final class Client
 
 
 	/**
+	 * @var string Directory extracted files are written to (never the client path,
+	 *             which is treated as read-only source material)
+	 */
+	static public $extract_path = '';
+
+
+	/**
 	 * @var string data.ini file
 	 */
 	static public $data_ini = '';
@@ -102,9 +109,11 @@ final class Client
 			if (self::$indexCacheConfig['enabled'] && ($cached = self::loadIndexCache($cacheFile, $cacheKey))) {
 				self::$FileList = $cached;
 			} else {
-				$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(self::getDataDirPath(), \FilesystemIterator::SKIP_DOTS));
-				foreach ($iterator as $fi) {
-					self::$FileList[] = $fi->getPathname();
+				foreach (self::getDataDirPaths() as $dataDir) {
+					$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dataDir, \FilesystemIterator::SKIP_DOTS));
+					foreach ($iterator as $fi) {
+						self::$FileList[] = $fi->getPathname();
+					}
 				}
 				if (self::$indexCacheConfig['enabled']) {
 					self::saveIndexCache($cacheFile, $cacheKey, self::$FileList);
@@ -254,20 +263,56 @@ final class Client
 	 */
 	static private function getFileListCacheKey()
 	{
-		$dataPath = self::getDataDirPath();
-		$mtime = file_exists($dataPath) ? filemtime($dataPath) : 0;
-		return md5($dataPath . '_' . $mtime);
+		$parts = array();
+
+		foreach (self::getDataDirPaths() as $dataPath) {
+			$parts[] = $dataPath . '_' . filemtime($dataPath);
+		}
+
+		return md5(implode('|', $parts));
 	}
 
 
 	/**
-	 * Get the absolute path of the game "data" directory (inside the client path)
+	 * Roots a requested file is looked up in, in order of precedence.
 	 *
-	 * @return string
+	 * Extracted files win over the client's own files so converted images
+	 * (BMP stored as PNG) are picked up instead of being converted again.
+	 *
+	 * @return array
 	 */
-	static private function getDataDirPath()
+	static private function getReadPaths()
 	{
-		return robrowser_resolve_path(self::$path . 'data');
+		$roots = array();
+
+		if (self::$extract_path !== '' && self::$extract_path !== self::$path) {
+			$roots[] = self::$extract_path;
+		}
+
+		$roots[] = self::$path;
+
+		return $roots;
+	}
+
+
+	/**
+	 * Absolute paths of the game "data" directories, for each read root
+	 *
+	 * @return array
+	 */
+	static private function getDataDirPaths()
+	{
+		$paths = array();
+
+		foreach (self::getReadPaths() as $root) {
+			$path = robrowser_resolve_path($root . 'data');
+
+			if (is_dir($path)) {
+				$paths[] = $path;
+			}
+		}
+
+		return $paths;
 	}
 
 
@@ -411,9 +456,7 @@ final class Client
 	 */
 	static public function getFile($path)
 	{
-		$local_path         = self::$path;
-		$local_path        .= str_replace('\\', '/', $path);
-		$local_pathEncoded  = mb_convert_encoding($local_path, 'UTF-8');
+		$relative_path      = str_replace('\\', '/', $path);
 		$grf_path           = str_replace('/', '\\', $path);
 		$content = null;
 
@@ -428,8 +471,16 @@ final class Client
 			}
 		}
 
-		// Read from local data folder
-		if (file_exists($local_pathEncoded) && !is_dir($local_pathEncoded) && is_readable($local_pathEncoded)) {
+		// Read from disk: already extracted files first, then the client itself
+		foreach (self::getReadPaths() as $root) {
+			$local_path        = $root . $relative_path;
+			$local_pathEncoded = mb_convert_encoding($local_path, 'UTF-8');
+
+			if (!file_exists($local_pathEncoded) || is_dir($local_pathEncoded) || !is_readable($local_pathEncoded)) {
+				Debug::write('File not found at ' . $local_path);
+				continue;
+			}
+
 			Debug::write('File found at ' . $local_path, 'success');
 
 			$content = file_get_contents($local_pathEncoded);
@@ -439,14 +490,15 @@ final class Client
 				self::$cache->set($path, $content);
 			}
 
-			// Store file if auto-extract is enabled
-			if (self::$AutoExtract) {
+			// BMP files coming from the client still have to be converted, the
+			// converted copy is what gets stored. Anything else is already on
+			// disk in a servable form, so there is nothing to extract.
+			if (self::$AutoExtract && $root !== self::$extract_path
+				&& strtolower(pathinfo($relative_path, PATHINFO_EXTENSION)) === 'bmp') {
 				return self::store($path, $content);
 			}
 
 			return $content;
-		} else {
-			Debug::write('File not found at ' . $local_path);
 		}
 
 		// Use file index for O(1) lookup
@@ -570,8 +622,7 @@ final class Client
 	static public function store($path, $content)
 	{
 		// $path         = mb_convert_encoding($path, 'UTF-8', 'ISO-8859-1'); // comment this seems to save the file in the correct folder idk why
-		$current_path = self::$path;
-		$local_path   = $current_path . str_replace('\\', '/', $path);
+		$local_path   = self::$extract_path . str_replace('\\', '/', $path);
 		$parent_path  = preg_replace("/[^\/]+$/", '', $local_path);
 
 		if (!file_exists($parent_path)) {
@@ -625,9 +676,13 @@ final class Client
 			return stripos($item, $filter) !== false;
 		});
 
-		$base = rtrim(robrowser_resolve_path(self::$path), '/');
-		$matches = array_map(function ($i) use ($base) {
-			return str_replace($base, '', $i);
+		$bases = array();
+		foreach (self::getReadPaths() as $root) {
+			$bases[] = rtrim(robrowser_resolve_path($root), '/');
+		}
+
+		$matches = array_map(function ($i) use ($bases) {
+			return str_replace($bases, '', $i);
 		}, $matches);
 
 		return array_unique(array_merge($out, $matches));

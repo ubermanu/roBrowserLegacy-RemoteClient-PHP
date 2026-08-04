@@ -23,11 +23,24 @@ RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
     DocumentRoot /var/www/html/public
     ErrorDocument 404 /index.php
 
-    # Game content lives in the (gitignored) client/ directory
+    # Game content comes from the read-only client/ directory
     Alias /data   /var/www/html/client/data
     Alias /BGM    /var/www/html/client/BGM
     Alias /System /var/www/html/client/System
     Alias /AI     /var/www/html/client/AI
+
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+
+        # BMP images are stored as PNG once extracted from the GRFs
+        RewriteRule ^/((?:data|BGM)/.*)\.bmp$ /$1.png [NC]
+
+        # ... and files already extracted into var/ win over the client's own copy.
+        # Substituting a filesystem path directly, since an Alias would no longer
+        # be applied at this point of the request.
+        RewriteCond /var/www/html/var/extracted/$1 -f
+        RewriteRule ^/((?:data|BGM)/.*)$ /var/www/html/var/extracted/$1 [L]
+    </IfModule>
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -42,15 +55,16 @@ RUN <<'EOF' cat >> /etc/apache2/sites-available/000-default.conf
         Require all granted
     </Directory>
 
+    <Directory /var/www/html/var/extracted>
+        Options +FollowSymLinks -MultiViews
+        AllowOverride None
+        Require all granted
+    </Directory>
+
     <Directory /var/www/html/client>
         Options +FollowSymLinks -MultiViews
         AllowOverride None
         Require all granted
-
-        <IfModule mod_rewrite.c>
-            RewriteEngine On
-            RewriteRule ^(.*)\.bmp$ $1\.png [NC,QSA]
-        </IfModule>
 
         <IfModule mod_speling.c>
             CheckSpelling On

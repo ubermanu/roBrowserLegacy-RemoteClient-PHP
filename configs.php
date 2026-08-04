@@ -45,11 +45,22 @@
 
 
         /**
+         * Where files extracted from the GRFs are written (mirroring the client
+         * layout, so 'var/extracted/' gives 'var/extracted/data/...' and
+         * 'var/extracted/BGM/...').
+         *
+         * Kept out of CLIENT_PATH on purpose: the client files are source material
+         * and are never written to, which also means they can be mounted read-only.
+         */
+        'EXTRACT_PATH'                 =>     robrowser_env_path('EXTRACT_PATH', 'var/extracted/'),
+
+
+        /**
          * If set to true, files loaded from GRFs will be extracted to the data folder
          * It will avoid to load GRFs each time the client request a file and
          * save server resources.
          *
-         * Note: it required write access to the data folder.
+         * Note: it required write access to EXTRACT_PATH.
          */
         'CLIENT_AUTOEXTRACT'               => robrowser_env_bool('CLIENT_AUTOEXTRACT', true),
 
