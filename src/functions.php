@@ -107,10 +107,15 @@ function robrowser_image_create_from_bmp_string($data)
 			$b = $palette[$i+0];
 			$g = $palette[$i+1];
 			$r = $palette[$i+2];
-			$a = $palette[$i+3];
+
+			// The 4th byte of a BMP palette entry is reserved, not an alpha
+			// channel: some clients leave garbage in it, and anything above 127
+			// makes imagecolorallocatealpha() throw. Palette entries are opaque
+			// unless the magenta color key says otherwise.
+			$a = 0;
 
 			// Magenta is transparent.
-			if (($r & 0xf8 === 0xf8) && ($g === 0) && ($b & 0xf8 === 0xf8)) {
+			if ((($r & 0xf8) === 0xf8) && ($g === 0) && (($b & 0xf8) === 0xf8)) {
 				$a = 127;
 			}
 
