@@ -17,14 +17,16 @@ Because pushing directly the fullclient on a server/ftp can provoke some errors,
  - **Korean Path Mapping** for CP949/EUC-KR filename encoding support.
  - **Warm Cache** for pre-loading frequently accessed files at startup.
  - **Startup Validator** for system validation and diagnostics.
- - **Doctor Command** (`php doctor.php`) for CLI-based diagnostics.
+ - **Doctor Command** (`bin/doctor`) for CLI-based diagnostics.
 
 ## Project Structure
 
 ```
 ├── bootstrap.php       # PSR-4 autoloader (no external dependencies)
 ├── configs.php         # Configuration (overridable via environment variables)
-├── doctor.php          # CLI diagnostics command
+├── bin/                # CLI commands
+│   ├── doctor          #   Diagnostics
+│   └── convert-encoding #  Korean path mapping generator
 ├── public/             # Web server document root
 │   └── index.php       # Front controller (file extraction + API endpoints)
 ├── src/                # PHP sources (namespace RoBrowser\RemoteClient)
@@ -38,7 +40,6 @@ Because pushing directly the fullclient on a server/ftp can provoke some errors,
 ├── var/                # Runtime files (gitignored)
 │   ├── cache/          #   Index cache
 │   └── logs/           #   Logs
-├── tools/              # CLI tools (encoding conversion)
 └── docker/             # Apache / Nginx container recipes
 ```
 
@@ -54,8 +55,8 @@ Add your own `data/`, `BGM/`, `System/` and `AI/` folders inside `client/` as we
 ### 2. Run diagnostics
 
 ```bash
-php doctor.php              # Basic validation
-php doctor.php --deep       # Deep validation with encoding analysis
+bin/doctor              # Basic validation
+bin/doctor --deep       # Deep validation with encoding analysis
 ```
 
 ### 3. Start the server
@@ -85,20 +86,20 @@ extracts them from the GRF archives.
 
 ### Doctor Command
 
-The `doctor.php` command provides comprehensive system validation:
+The `bin/doctor` command provides comprehensive system validation:
 
 ```bash
 # Basic validation
-php doctor.php
+bin/doctor
 
 # Deep validation (includes encoding analysis - slower but thorough)
-php doctor.php --deep
+bin/doctor --deep
 
 # JSON output (for automation)
-php doctor.php --json
+bin/doctor --json
 
 # Show help
-php doctor.php --help
+bin/doctor --help
 ```
 
 **What it validates:**
@@ -208,16 +209,16 @@ PATH_MAPPING_FILE=path-mapping.json
 
 ```bash
 # Generate path-mapping.json by scanning your GRFs
-php tools/convert-encoding.php
+bin/convert-encoding
 
 # Preview without writing (dry run)
-php tools/convert-encoding.php --dry-run
+bin/convert-encoding --dry-run
 
 # Custom output file
-php tools/convert-encoding.php --output=custom-mapping.json
+bin/convert-encoding --output=custom-mapping.json
 
 # Verbose output
-php tools/convert-encoding.php --verbose
+bin/convert-encoding --verbose
 ```
 
 The tool will:

@@ -823,7 +823,7 @@ final class StartupValidator
         if ($results['mojibakeDetected'] > 0) {
             $this->addWarning(
                 "Mojibake detected: {$results['mojibakeDetected']} files need encoding conversion. " .
-                "Run 'php tools/convert-encoding.php' to generate path-mapping.json"
+                "Run 'bin/convert-encoding' to generate path-mapping.json"
             );
         }
 
@@ -1116,7 +1116,7 @@ final class StartupValidator
             echo "\n";
         } else {
             echo "❌ Validation failed! {$results['summary']['errorCount']} error(s) found\n";
-            echo "💡 Tip: Run 'php doctor.php' for detailed diagnosis\n";
+            echo "💡 Tip: Run 'bin/doctor' for detailed diagnosis\n";
         }
 
         echo str_repeat('=', 80) . "\n";

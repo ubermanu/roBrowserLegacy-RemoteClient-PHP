@@ -5,9 +5,9 @@
  * Doctor Command - Full system diagnosis
  * 
  * Usage:
- *   php doctor.php              # Basic validation
- *   php doctor.php --deep       # Deep validation including encoding check
- *   php doctor.php --help       # Show help
+ *   bin/doctor              # Basic validation
+ *   bin/doctor --deep       # Deep validation including encoding check
+ *   bin/doctor --help       # Show help
  * 
  * @author roBrowser Legacy Team (Mike)
  * @version 1.0.0
@@ -15,11 +15,11 @@
 
 use RoBrowser\RemoteClient\StartupValidator;
 
-// Change to script directory
-chdir(dirname(__FILE__));
+// All configured paths are relative to the project root
+chdir(dirname(__DIR__));
 
 // Register autoloader
-require_once __DIR__ . '/bootstrap.php';
+require_once dirname(__DIR__) . '/bootstrap.php';
 
 // Parse command line arguments
 $args = array_slice($argv, 1);
@@ -35,7 +35,7 @@ if ($showHelp) {
 ║            🏥 roBrowser Remote Client - Doctor (PHP)                       ║
 ╚════════════════════════════════════════════════════════════════════════════╝
 
-Usage: php doctor.php [options]
+Usage: bin/doctor [options]
 
 Options:
   --deep, -d     Run deep encoding validation (slower but thorough)
@@ -43,10 +43,10 @@ Options:
   --help, -h     Show this help message
 
 Examples:
-  php doctor.php                 # Basic validation
-  php doctor.php --deep          # Deep validation with encoding analysis
-  php doctor.php --json          # Output as JSON (for automation)
-  php doctor.php --deep --json   # Deep validation with JSON output
+  bin/doctor                 # Basic validation
+  bin/doctor --deep          # Deep validation with encoding analysis
+  bin/doctor --json          # Output as JSON (for automation)
+  bin/doctor --deep --json   # Deep validation with JSON output
 
 What this tool validates:
   ✓ PHP version (minimum 7.4.0)
@@ -111,7 +111,7 @@ if (!$results['success']) {
     
     // Suggest deep encoding if not done
     if (!$deepEncoding) {
-        echo "\n💡 Tip: Run \"php doctor.php --deep\" for detailed encoding analysis\n";
+        echo "\n💡 Tip: Run \"bin/doctor --deep\" for detailed encoding analysis\n";
     }
     echo "\n";
     exit(0);
@@ -180,7 +180,7 @@ function printEncodingReport($encoding)
     // Recommendations
     if ($encoding['needsConversion'] > 0) {
         echo "💡 RECOMMENDATION:\n";
-        echo "   Run 'php tools/convert-encoding.php' to generate path-mapping.json\n";
+        echo "   Run 'bin/convert-encoding' to generate path-mapping.json\n";
         echo "   This will allow the server to resolve Korean filenames automatically.\n";
         echo "\n";
     }
