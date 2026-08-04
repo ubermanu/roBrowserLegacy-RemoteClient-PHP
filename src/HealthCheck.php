@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview HealthCheck - API health check endpoint
  * @author roBrowser Legacy Team
@@ -221,7 +223,7 @@ final class HealthCheck
      */
     static private function getCompressionStatus()
     {
-        if (!class_exists('Compression')) {
+        if (!class_exists(Compression::class)) {
             return [
                 'enabled' => false,
                 'message' => 'Compression class not loaded'

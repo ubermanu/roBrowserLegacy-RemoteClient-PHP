@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview Client - File Manager
  * @author Vincent Thibault (alias KeyWorld - Twitter: @robrowser)
@@ -100,7 +102,7 @@ final class Client
 			if (self::$indexCacheConfig['enabled'] && ($cached = self::loadIndexCache($cacheFile, $cacheKey))) {
 				self::$FileList = $cached;
 			} else {
-				$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(getcwd() . '/data', FilesystemIterator::SKIP_DOTS));
+				$iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(self::getDataDirPath(), \FilesystemIterator::SKIP_DOTS));
 				foreach ($iterator as $fi) {
 					self::$FileList[] = $fi->getPathname();
 				}
@@ -115,7 +117,8 @@ final class Client
 			return;
 		}
 
-		$path = self::$path . self::$data_ini;
+		// $data_ini is already a full path relative to the project root (CLIENT_RESPATH + CLIENT_DATAINI)
+		$path = self::$data_ini;
 
 		if (!file_exists($path)) {
 			Debug::write('File not found: ' . $path, 'error');
@@ -251,9 +254,20 @@ final class Client
 	 */
 	static private function getFileListCacheKey()
 	{
-		$dataPath = getcwd() . '/data';
+		$dataPath = self::getDataDirPath();
 		$mtime = file_exists($dataPath) ? filemtime($dataPath) : 0;
 		return md5($dataPath . '_' . $mtime);
+	}
+
+
+	/**
+	 * Get the absolute path of the game "data" directory (inside the client path)
+	 *
+	 * @return string
+	 */
+	static private function getDataDirPath()
+	{
+		return getcwd() . '/' . self::$path . 'data';
 	}
 
 
@@ -464,7 +478,7 @@ final class Client
 		Debug::write('File not found in index, falling back to sequential search');
 
 		// Try path mapping for Korean filenames
-		if (class_exists('PathMapping')) {
+		if (class_exists(PathMapping::class)) {
 			$mappedPath = PathMapping::resolve($path);
 			if ($mappedPath !== null) {
 				Debug::write("Path mapping found: {$path} -> {$mappedPath}", 'info');
@@ -611,8 +625,9 @@ final class Client
 			return stripos($item, $filter) !== false;
 		});
 
-		$matches = array_map(function ($i) {
-			return str_replace(getcwd(), '', $i);
+		$base = rtrim(getcwd() . '/' . self::$path, '/');
+		$matches = array_map(function ($i) use ($base) {
+			return str_replace($base, '', $i);
 		}, $matches);
 
 		return array_unique(array_merge($out, $matches));

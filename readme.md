@@ -19,12 +19,34 @@ Because pushing directly the fullclient on a server/ftp can provoke some errors,
  - **Startup Validator** for system validation and diagnostics.
  - **Doctor Command** (`php doctor.php`) for CLI-based diagnostics.
 
+## Project Structure
+
+```
+├── bootstrap.php       # PSR-4 autoloader (no external dependencies)
+├── configs.php         # Configuration (overridable via environment variables)
+├── doctor.php          # CLI diagnostics command
+├── public/             # Web server document root
+│   └── index.php       # Front controller (file extraction + API endpoints)
+├── src/                # PHP sources (namespace RoBrowser\RemoteClient)
+├── client/             # Your game client files - gitignored (see client/README.md)
+│   ├── DATA.INI        #   GRF load order
+│   ├── *.grf           #   GRF archives
+│   ├── data/           #   Extracted/override files, served as /data/...
+│   ├── BGM/            #   Served as /BGM/...
+│   ├── System/         #   Served as /System/...
+│   └── AI/             #   Served as /AI/...
+├── cache/              # Runtime index cache (gitignored)
+├── logs/               # Runtime logs (gitignored)
+├── tools/              # CLI tools (encoding conversion)
+└── docker/             # Apache / Nginx container recipes
+```
+
 ## Quick Start
 
 ### 1. Add your fullclient
 
-Just put your GRFs files and DATA.INI file in the `resources/` directory.
-Overwrite the `BGM/`, `data/` and `System/` directories with your own folders.
+Put your GRFs files and DATA.INI file in the `client/` directory.
+Add your own `data/`, `BGM/`, `System/` and `AI/` folders inside `client/` as well (see [client/README.md](client/README.md)).
 
 **Note: to be sure to use a compatible version of your GRFs, download *GRF Builder* and repack them manually (Option > Repack type > Repack), it will ensure the GRFs files are converted in the proper version**
 
@@ -38,6 +60,20 @@ php doctor.php --deep       # Deep validation with encoding analysis
 ### 3. Start the server
 
 Using Docker or your preferred web server (Apache, Nginx).
+
+When configuring a web server manually, point the document root to the `public/` directory and map the game
+content URLs to the `client/` directory (see [docker/apache/Dockerfile](docker/apache/Dockerfile) or
+[docker/nginx/Dockerfile](docker/nginx/Dockerfile) for reference):
+
+```
+/data   -> client/data
+/BGM    -> client/BGM
+/System -> client/System
+/AI     -> client/AI
+```
+
+Requests for files that are not found on disk must be routed to `public/index.php` (404 handler), which
+extracts them from the GRF archives.
 
 ---
 ## Wiki
@@ -90,7 +126,7 @@ php doctor.php --help
    PHP version: 8.3.6
    Extension 'zlib' loaded
    Extension 'mbstring' loaded
-   DATA.INI found: resources/DATA.INI
+   DATA.INI found: data/DATA.INI
    Valid GRF: data.grf (version 0x200)
    Memory limit: 1000M
 

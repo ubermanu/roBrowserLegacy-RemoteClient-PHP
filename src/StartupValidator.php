@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview StartupValidator - System validation on startup
  * @author roBrowser Legacy Team (Mike)
@@ -218,12 +220,16 @@ final class StartupValidator
      */
     public function validateRequiredFiles()
     {
+        $CONFIGS  = require dirname(__DIR__) . '/configs.php';
+        $resPath  = rtrim($CONFIGS['CLIENT_RESPATH'], '/');
+        $dataPath = rtrim($CONFIGS['CLIENT_DATAPATH'], '/');
+
         $checks = [
-            ['path' => 'resources', 'type' => 'dir', 'required' => true, 'name' => 'resources/ folder'],
-            ['path' => 'data', 'type' => 'dir', 'required' => false, 'name' => 'data/ folder'],
-            ['path' => 'BGM', 'type' => 'dir', 'required' => false, 'name' => 'BGM/ folder'],
-            ['path' => 'System', 'type' => 'dir', 'required' => false, 'name' => 'System/ folder'],
-            ['path' => 'AI', 'type' => 'dir', 'required' => false, 'name' => 'AI/ folder'],
+            ['path' => $resPath, 'type' => 'dir', 'required' => true, 'name' => $resPath . '/ folder (GRFs + DATA.INI)'],
+            ['path' => $dataPath . '/data', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/data/ folder'],
+            ['path' => $dataPath . '/BGM', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/BGM/ folder'],
+            ['path' => $dataPath . '/System', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/System/ folder'],
+            ['path' => $dataPath . '/AI', 'type' => 'dir', 'required' => false, 'name' => $dataPath . '/AI/ folder'],
             ['path' => 'logs', 'type' => 'dir', 'required' => false, 'name' => 'logs/ folder'],
         ];
 
@@ -305,7 +311,7 @@ final class StartupValidator
      */
     public function validateConfig()
     {
-        $CONFIGS = require('configs.php');
+        $CONFIGS = require dirname(__DIR__) . '/configs.php';
         $hasErrors = false;
         $results = [];
 
@@ -378,7 +384,7 @@ final class StartupValidator
      */
     public function validateGrfs()
     {
-        $CONFIGS = require('configs.php');
+        $CONFIGS = require dirname(__DIR__) . '/configs.php';
         $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
 
         if (!file_exists($dataIniPath)) {
@@ -562,7 +568,7 @@ final class StartupValidator
                 'pathEncoding' => $pathEncoding,
             ];
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             fclose($fp);
             return [
                 'valid' => false,
@@ -746,7 +752,7 @@ final class StartupValidator
      */
     public function validateEncodingDeep()
     {
-        $CONFIGS = require('configs.php');
+        $CONFIGS = require dirname(__DIR__) . '/configs.php';
         $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
 
         $results = [
@@ -951,7 +957,7 @@ final class StartupValidator
                 $position = $end + 1 + $metaLen;
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if (is_resource($fp)) {
                 fclose($fp);
             }
@@ -1133,7 +1139,7 @@ final class StartupValidator
         $this->validateConfig();
         
         // Only check if GRFs exist, don't validate format (faster)
-        $CONFIGS = require('configs.php');
+        $CONFIGS = require dirname(__DIR__) . '/configs.php';
         $dataIniPath = $CONFIGS['CLIENT_RESPATH'] . $CONFIGS['CLIENT_DATAINI'];
         
         if (!file_exists($dataIniPath)) {

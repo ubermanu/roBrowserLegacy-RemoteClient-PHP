@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview Compression - Handle Gzip/Deflate compression for responses
  * @author GitHub Copilot
@@ -168,7 +170,7 @@ class Compression
         header('Vary: Accept-Encoding');
 
         // Log compression stats in debug mode
-        if (class_exists('Debug') && Debug::isEnable()) {
+        if (class_exists(Debug::class) && Debug::isEnable()) {
             $ratio = round((1 - strlen($compressed) / $contentLength) * 100, 1);
             Debug::write("Compressed with {$encoding}: {$contentLength} → " . strlen($compressed) . " bytes ({$ratio}% reduction)", 'info');
         }

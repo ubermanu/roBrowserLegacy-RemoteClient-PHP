@@ -19,8 +19,12 @@ server {
     listen 80;
     server_name _;
 
-    root /var/www/html;
+    root /var/www/html/public;
     index index.php index.html index.htm;
+
+    add_header 'Access-Control-Allow-Origin' '*';
+    add_header 'Access-Control-Allow-Headers' 'X-Application';
+    error_page 404 /index.php;
 
     gzip on;
     gzip_comp_level 5;
@@ -38,10 +42,30 @@ server {
         text/plain
         application/xml;
 
+    # Game content lives in the (gitignored) client/ directory.
+    # Files already on disk are served statically; anything else falls
+    # back to index.php which extracts them from the GRF archives.
+    location /data/ {
+        alias /var/www/html/client/data/;
+        try_files $uri =404;
+    }
+
+    location /BGM/ {
+        alias /var/www/html/client/BGM/;
+        try_files $uri =404;
+    }
+
+    location /System/ {
+        alias /var/www/html/client/System/;
+        try_files $uri =404;
+    }
+
+    location /AI/ {
+        alias /var/www/html/client/AI/;
+        try_files $uri =404;
+    }
+
     location / {
-        add_header 'Access-Control-Allow-Origin' '*';
-        add_header 'Access-Control-Allow-Headers' 'X-Application';
-        error_page 404 /index.php;
         try_files $uri $uri/ =404;
     }
 

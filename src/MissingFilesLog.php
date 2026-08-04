@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview MissingFilesLog - Log missing file requests
  * @author roBrowser Legacy Team ( Mike )

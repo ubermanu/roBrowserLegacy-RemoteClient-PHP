@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview LRU (Least Recently Used) Cache Implementation
  * @author roBrowser Legacy Team

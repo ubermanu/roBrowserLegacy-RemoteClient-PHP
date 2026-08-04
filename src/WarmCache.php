@@ -1,5 +1,7 @@
 <?php
 
+namespace RoBrowser\RemoteClient;
+
 /**
  * @fileoverview WarmCache - Pre-load frequently accessed files into cache
  * @author roBrowser Legacy Team ( Mike )
@@ -235,7 +237,7 @@ final class WarmCache
             if ($content !== false) {
                 return strlen($content);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Debug::write("Warm cache error loading {$path}: " . $e->getMessage(), 'error');
         }
 
@@ -313,7 +315,7 @@ final class WarmCache
      */
     static public function warmFromHistory($limit = 20)
     {
-        if (!class_exists('MissingFilesLog')) {
+        if (!class_exists(MissingFilesLog::class)) {
             return self::$stats;
         }
 
